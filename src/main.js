@@ -1,16 +1,14 @@
-// src/main.js
-
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import router from './router'; // <-- Impor router kita
-import './assets/main.css'; // <-- Pastikan ini mengimpor Tailwind
+import router from './router'; 
+import './assets/main.css'; 
 import VueApexCharts from "vue3-apexcharts";
-
 
 const app = createApp(App);
 
-app.use(createPinia())
-app.use(router); // <-- Gunakan router
-app.use(VueApexCharts)
+app.use(createPinia());
+app.use(router);
+app.use(VueApexCharts);
+
 app.mount('#app');
