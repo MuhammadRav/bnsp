@@ -60,11 +60,6 @@
                   </button>
                   <p v-if="!localItem.url_photo" class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded">Foto belum dipilih!</p>
                 </div>
-
-                <div class="mt-auto bg-blue-50 p-5 rounded-2xl border border-blue-100">
-                    <h5 class="text-xs font-bold text-blue-800 mb-2 flex items-center gap-2"><InformationCircleIcon class="h-4 w-4" /> Info Katalog</h5>
-                    <p class="text-[11px] text-blue-700 leading-relaxed font-medium">Foto ini akan muncul pada menu permintaan ATK pegawai dan laporan inventaris utama.</p>
-                </div>
              </div>
           </div>
 

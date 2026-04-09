@@ -119,10 +119,24 @@
               <tr v-if="filteredStock.length === 0"><td colspan="5" class="py-12 text-center text-sm text-slate-500">Data stok tidak ditemukan.</td></tr>
               <tr v-for="item in paginatedStock" :key="item.id" class="hover:bg-slate-50 transition-colors">
                 <td class="px-6 py-4">
-                  <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 bg-slate-100 rounded-lg flex items-center justify-center"><img v-if="getATK(item.item_id).url_photo" :src="getATK(item.item_id).url_photo" class="h-8 w-8 object-contain" /><ArchiveBoxIcon v-else class="h-5 w-5 text-slate-400" /></div>
-                    <div><p class="text-sm font-bold text-slate-800">{{ getATK(item.item_id).name }}</p><p class="text-[10px] font-mono text-slate-400">{{ getATK(item.item_id).code }}</p></div>
-                  </div>
+                  <button 
+                    @click="openDetailModal(item)" 
+                    class="flex items-center gap-3 group/item text-left w-full rounded-lg p-1 -ml-1 hover:bg-blue-50 transition-all"
+                  >
+                    <div class="h-10 w-10 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 group-hover/item:border-blue-200 group-hover/item:shadow-sm transition-all flex-shrink-0">
+                      <img v-if="getATK(item.item_id).url_photo" :src="getATK(item.item_id).url_photo" class="h-8 w-8 object-contain" />
+                      <ArchiveBoxIcon v-else class="h-5 w-5 text-slate-400" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-bold text-slate-800 group-hover/item:text-blue-700 truncate transition-colors">
+                        {{ getATK(item.item_id).name }}
+                      </p>
+                      <p class="text-[10px] font-mono text-slate-400 group-hover/item:text-blue-500 transition-colors">
+                        {{ getATK(item.item_id).code }}
+                      </p>
+                    </div>
+                    <ChevronRightIcon class="h-4 w-4 text-blue-400 opacity-0 group-hover/item:opacity-100 transition-all mr-1 flex-shrink-0" />
+                  </button>
                 </td>
                 <td class="px-6 py-4 text-sm font-semibold text-slate-600">{{ getUnitAlias(item.unit_id) }}</td>
                 <td class="px-6 py-4">
@@ -258,6 +272,12 @@
     @close="closeModal"
     @save="handleStockSave"
   />
+  <StockDetailModal
+    :show="isDetailModalOpen"
+    :item="selectedItem"
+    @close="closeDetailModal" 
+    @edit="handleEditFromDetail"
+  />
 </template>
 
 <script setup>
@@ -269,6 +289,7 @@ import {
   MagnifyingGlassIcon, PlusIcon, ArchiveBoxIcon, XMarkIcon, CalendarDaysIcon, 
   CheckCircleIcon, XCircleIcon, NoSymbolIcon, MapPinIcon, ChevronLeftIcon, ChevronRightIcon
 } from '@heroicons/vue/24/outline';
+import StockDetailModal from '../../components/admin/StockDetailModal.vue';
 
 const store = useInventoryStore();
 
@@ -281,6 +302,7 @@ const isModalOpen = ref(false);
 const selectedItem = ref(null);
 const showDeleteModal = ref(false);
 const itemToDelete = ref(null);
+const isDetailModalOpen = ref(false);
 
 // PAGINATION STATE
 const stockPage = ref(1);
@@ -354,6 +376,44 @@ const openStockModal = (item) => {
 };
 
 const closeModal = () => { isModalOpen.value = false; selectedItem.value = null; };
+
+const openDetailModal = (item) => {
+  // Ambil data referensi dari master ATK dan Unit
+  const atkMaster = getATK(item.item_id);
+  const unitMaster = store.units.find(u => u.id === item.unit_id);
+  const categoryName = store.categories.find(c => c.id === atkMaster.category_id)?.name || 'Umum';
+
+  // Susun object data yang lengkap untuk dikirim ke Detail Modal
+  selectedItem.value = {
+    ...item,
+    stock: item.stock,
+    name: atkMaster.name,
+    sku: atkMaster.code,
+    uom: atkMaster.uom,
+    url_photo: atkMaster.url_photo,
+    unit: unitMaster?.alias || '-',
+    category: categoryName,
+    // Ambil data batch (pastikan struktur di store sudah FIFO siap)
+    batches: item.batches || [] 
+  };
+  isDetailModalOpen.value = true;
+};
+
+const closeDetailModal = () => {
+  isDetailModalOpen.value = false;
+  selectedItem.value = null;
+};
+
+// 4. LOGIC KETIKA TOMBOL EDIT DI DALAM DETAIL MODAL DIKLIK
+const handleEditFromDetail = () => {
+  // Simpan item yang sedang dilihat
+  const itemToEdit = { ...selectedItem.value };
+  // Tutup modal detail
+  closeDetailModal();
+  // Buka modal form edit (fungsi openStockModal yang sudah ada sebelumnya)
+  // Perlu sedikit penyesuaian di fungsi openStockModal asli agar menerima item penuh
+  openStockModal(itemToEdit); 
+};
 
 const handleStockSave = async (formData) => {
   try {
