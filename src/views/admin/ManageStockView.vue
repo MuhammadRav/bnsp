@@ -138,7 +138,7 @@
                 </td>
                 <td class="px-6 py-4 text-center">
                   <div class="flex justify-center gap-2">
-                    <button @click="openStockModal(item)" class="text-blue-600 font-bold text-xs hover:underline">Mutasi</button>
+                    <button @click="openStockModal(item)" class="text-blue-600 font-bold text-xs hover:underline">Edit</button>
                     <button @click="handleDelete(item)" class="text-red-600 font-bold text-xs hover:underline">Hapus</button>
                   </div>
                 </td>

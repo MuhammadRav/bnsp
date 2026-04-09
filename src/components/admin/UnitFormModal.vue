@@ -39,7 +39,7 @@
               <div class="space-y-6">
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div class="space-y-2">
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Ref ID (Kode) <span class="text-red-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Ref ID <span class="text-red-500">*</span></label>
                         <div class="flex rounded-xl shadow-sm">
                           <div class="relative">
                             <select v-model="refPrefix" class="h-full rounded-l-xl border-y border-l border-r-0 border-slate-300 bg-slate-50 text-slate-600 font-bold text-sm pl-3 pr-7 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 appearance-none outline-none">
@@ -174,11 +174,20 @@
         </div>
 
         <div class="flex items-center justify-between px-8 py-5 bg-white border-t border-slate-200 shrink-0 rounded-b-2xl z-20 shadow-sm">
-          <div class="text-xs font-bold" :class="isFormReady ? 'text-emerald-600' : 'text-red-400'">
-              <span v-if="idValidationError" class="flex items-center gap-1.5"><XCircleIcon class="h-5 w-5" /> FORMAT ID SALAH</span>
-              <span v-else-if="isAnyDuplicate" class="flex items-center gap-1.5"><ExclamationCircleIcon class="h-5 w-5" /> DATA DUPLIKAT TERDETEKSI</span>
-              <span v-else-if="isFormComplete" class="flex items-center gap-1.5"><CheckBadgeIcon class="h-5 w-5" /> DATA VALID</span>
-              <span v-else>Lengkapi kolom bertanda *</span>
+          <div class="flex-1 mr-4">
+              <div v-if="validationSummary.length > 0" class="flex flex-col items-start gap-1">
+                <p class="text-[10px] font-black text-red-500 uppercase tracking-wide flex items-center gap-1">
+                  <ExclamationCircleIcon class="h-3 w-3" /> Data Belum Lengkap:
+                </p>
+                <div class="flex flex-wrap gap-1">
+                  <span v-for="(err, idx) in validationSummary" :key="idx" class="px-2 py-0.5 bg-red-50 text-red-600 border border-red-100 rounded text-[9px] font-bold">
+                      {{ err }}
+                  </span>
+                </div>
+              </div>
+              <div v-else class="text-xs font-bold text-emerald-600 flex items-center gap-1.5">
+                <CheckBadgeIcon class="h-5 w-5" /> SEMUA DATA VALID
+              </div>
           </div>
           <div class="flex gap-4">
             <button @click="onClose" class="px-6 py-2.5 text-sm font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-xl transition-all">Batal</button>
@@ -274,11 +283,24 @@ const duplicateDetails = computed(() => {
 
 const isAnyDuplicate = computed(() => duplicateDetails.value.ref_id || duplicateDetails.value.phone);
 
-const isFormComplete = computed(() => {
-  return refNumber.value && unitRegion.value && localUnit.value.name?.trim() && localUnit.value.phone?.trim() && localUnit.value.address?.trim(); 
+// --- VALIDATION SUMMARY (KONSISTEN DENGAN ATK) ---
+const validationSummary = computed(() => {
+  const errors = [];
+  
+  if (idValidationError.value) errors.push("Format Kode");
+  if (!refNumber.value) errors.push("REF ID");
+  if (duplicateDetails.value.ref_id) errors.push("Kode Terdaftar");
+  
+  if (!unitRegion.value?.trim()) errors.push("Alias Unit");
+  if (!localUnit.value.name?.trim()) errors.push("Nama Lengkap");
+  if (!localUnit.value.phone?.trim()) errors.push("No Telepon");
+  if (duplicateDetails.value.phone) errors.push("Telepon Terdaftar");
+  if (!localUnit.value.address?.trim()) errors.push("Alamat");
+
+  return errors;
 });
 
-// Properti untuk mematikan tombol Simpan
+const isFormComplete = computed(() => validationSummary.value.length === 0);
 const isFormReady = computed(() => isFormComplete.value && !idValidationError.value && !isAnyDuplicate.value);
 
 const handleValidateAndSave = () => {
