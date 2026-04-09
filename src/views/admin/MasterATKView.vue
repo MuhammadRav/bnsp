@@ -109,9 +109,19 @@
                    Rp {{ item.price?.toLocaleString('id-ID') }}
                 </td>
                 <td class="py-4 pr-6 text-center">
-                  <div class="flex justify-center gap-3">
-                    <button @click="openModal(item)" class="text-blue-600 hover:text-blue-800 font-bold text-xs uppercase tracking-wider">Edit</button>
-                    <button @click="handleDelete(item)" class="text-red-600 hover:text-red-800 font-bold text-xs uppercase tracking-wider">Hapus</button>
+                  <div class="flex items-center justify-center gap-2">
+                    <button 
+                      @click="openModal(item)" 
+                      class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md font-bold shadow-sm text-xs border border-blue-200 transition-all"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      @click="handleDelete(item)" 
+                      class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md font-bold shadow-sm text-xs border border-red-200 transition-all"
+                    >
+                      Hapus
+                    </button>
                   </div>
                 </td>
               </tr>

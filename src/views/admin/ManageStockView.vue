@@ -137,9 +137,19 @@
                   <span class="px-2 py-1 rounded-full text-[10px] font-bold" :class="item.status === 'Active' ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500'">{{ item.status }}</span>
                 </td>
                 <td class="px-6 py-4 text-center">
-                  <div class="flex justify-center gap-2">
-                    <button @click="openStockModal(item)" class="text-blue-600 font-bold text-xs hover:underline">Edit</button>
-                    <button @click="handleDelete(item)" class="text-red-600 font-bold text-xs hover:underline">Hapus</button>
+                  <div class="flex items-center justify-center gap-2">
+                    <button 
+                      @click="openStockModal(item)" 
+                      class="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-md font-bold shadow-sm text-xs border border-blue-200 transition-all"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      @click="handleDelete(item)" 
+                      class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-md font-bold shadow-sm text-xs border border-red-200 transition-all"
+                    >
+                      Hapus
+                    </button>
                   </div>
                 </td>
               </tr>
