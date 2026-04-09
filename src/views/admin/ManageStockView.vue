@@ -110,7 +110,7 @@
               <tr>
                 <th class="px-6 py-4 text-left">Barang</th>
                 <th class="px-6 py-4 text-left">Unit</th>
-                <th class="px-6 py-4 text-left">Kondisi</th>
+                <th class="px-6 py-4 text-left">Stok</th>
                 <th class="px-6 py-4 text-center">Status</th>
                 <th class="px-6 py-4 text-center">Aksi</th>
               </tr>

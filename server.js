@@ -34,6 +34,7 @@ export async function logStock(type, itemId, qty, actor, note, conn) {
 // ===============================
 // 3. AUTHENTICATION (LOGIN HYBRID)
 // ===============================
+// app itu object, post method
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;

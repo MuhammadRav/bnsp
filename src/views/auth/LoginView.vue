@@ -94,11 +94,11 @@
             </button>
           </form>
 
-          <div class="mt-8 pt-6 border-t border-slate-100">
+          <!-- <div class="mt-8 pt-6 border-t border-slate-100">
              <p class="text-center text-xs text-gray-400">
                Butuh bantuan akses? <a href="#" class="text-primary-blue hover:underline font-bold">Hubungi IT Support</a>
              </p>
-          </div>
+          </div> -->
         </div>
       </div>
     </Transition>

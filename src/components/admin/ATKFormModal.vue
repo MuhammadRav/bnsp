@@ -1,5 +1,6 @@
 <template>
   <Teleport to="body">
+    
     <div v-if="show" @click="onClose" class="fixed inset-0 z-[999] bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300"></div>
 
     <div v-if="show" class="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6">
@@ -9,25 +10,24 @@
         <div class="flex items-center justify-between border-b border-slate-200 px-8 py-5 bg-white z-20 flex-shrink-0 shadow-sm relative overflow-hidden">
           <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
           <div class="flex items-center gap-5">
-            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg shadow-blue-500/30 ring-1 ring-white">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-lg">
               <ClipboardDocumentListIcon class="h-7 w-7" />
             </div>
             <div>
               <h3 class="text-xl font-extrabold leading-6 text-slate-800 tracking-tight">
                 {{ isEditing ? 'Edit Master Barang' : 'Registrasi Barang Baru' }}
               </h3>
-              <p class="text-sm text-slate-500 mt-0.5 font-medium">
-                Kelola katalog referensi barang dan spesifikasi (eatk_item).
-              </p>
+              <p class="text-sm text-slate-500 mt-0.5 font-medium">Kelola katalog referensi barang dan spesifikasi.</p>
             </div>
           </div>
-          <button @click="onClose" class="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-red-500 transition-all duration-200 hover:rotate-90 focus:outline-none">
+          <button @click="onClose" class="rounded-xl p-2 text-slate-400 hover:text-red-500 transition-all duration-200 hover:rotate-90">
             <XMarkIcon class="h-7 w-7" />
           </button>
         </div>
 
         <div class="flex flex-1 overflow-hidden">
-          <div class="w-1/3 h-full bg-white border-r border-slate-200 p-8 flex flex-col items-center shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] z-10 hidden md:flex">
+          
+          <div class="w-1/3 h-full bg-white border-r border-slate-200 p-8 flex flex-col items-center shadow-sm z-10 hidden md:flex">
              <div class="w-full max-w-xs flex flex-col h-full">
                 <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 text-center shrink-0">
                   Foto Produk <span class="text-red-500">*</span>
@@ -39,13 +39,13 @@
                   @click="triggerFileInput"
                 >
                   <img v-if="localItem.url_photo" :src="localItem.url_photo" alt="Produk" class="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105" />
-                  <div v-else class="text-center p-6 flex flex-col items-center justify-center h-full w-full">
-                      <PhotoIcon class="h-16 w-16 mb-3 transition-colors text-red-200" />
-                      <span class="text-[10px] font-bold uppercase tracking-wide opacity-50 text-red-400">Wajib Upload</span>
+                  <div v-else class="text-center p-6 flex flex-col items-center justify-center">
+                      <PhotoIcon class="h-16 w-16 mb-3 text-red-200" />
+                      <span class="text-[10px] font-bold uppercase text-red-400">Wajib Upload</span>
                   </div>
-                  <div class="absolute inset-0 bg-slate-900/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-[1px]">
-                    <CameraIcon class="h-10 w-10 text-white mb-2 drop-shadow-md" />
-                    <span class="text-xs font-bold text-white uppercase tracking-wide drop-shadow-md">Ganti Foto</span>
+                  <div class="absolute inset-0 bg-slate-900/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <CameraIcon class="h-10 w-10 text-white mb-2" />
+                    <span class="text-xs font-bold text-white uppercase">Ganti Foto</span>
                   </div>
                 </div>
                 
@@ -63,7 +63,7 @@
                 
                 <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
-                   <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-6 border-b border-slate-100 pb-3 flex items-center gap-2">Identitas Barang</h4>
+                   <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-6 border-b border-slate-100 pb-3">Identitas Barang</h4>
                    
                    <div class="space-y-6">
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -82,8 +82,8 @@
                                 placeholder="001" 
                               />
                           </div>
-                          <p v-if="idValidationError" class="text-[10px] text-red-600 font-bold italic animate-pulse">{{ idValidationError }}</p>
-                          <p v-else-if="isCodeDuplicate" class="text-[10px] text-red-600 font-bold italic animate-pulse">Kode ini sudah terdaftar pada barang lain!</p>
+                          <p v-if="idValidationError" class="text-[10px] text-red-600 font-bold italic">{{ idValidationError }}</p>
+                          <p v-else-if="isCodeDuplicate" class="text-[10px] text-red-600 font-bold italic">Kode ini sudah terdaftar!</p>
                         </div>
 
                         <div class="space-y-2">
@@ -100,14 +100,13 @@
                         </div>
 
                         <div class="space-y-2">
-                           <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Satuan (UOM) <span class="text-red-500">*</span></label>
-                           <div class="relative">
-                               <select v-model="localItem.uom" required class="form-select-bold px-4 w-full" :disabled="!localItem.category_id" :class="{'bg-slate-50 cursor-not-allowed opacity-60': !localItem.category_id}">
-                                   <option value="" disabled>{{ !localItem.category_id ? 'Pilih kategori dahulu' : 'Pilih Satuan' }}</option>
-                                   <option v-for="u in availableUOMs" :key="u" :value="u">{{ u }}</option>
-                               </select>
-                           </div>
-                           <p v-if="!localItem.category_id" class="text-[10px] text-amber-600 mt-1 font-bold italic">Pilih kategori untuk melihat satuan yang tersedia.</p>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Satuan (UOM) <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select v-model="localItem.uom" required class="form-select-bold px-4 w-full" :disabled="!localItem.category_id" :class="{'bg-slate-50 cursor-not-allowed opacity-60': !localItem.category_id}">
+                                    <option value="" disabled>{{ !localItem.category_id ? 'Pilih kategori dahulu' : 'Pilih Satuan' }}</option>
+                                    <option v-for="u in availableUOMs" :key="u" :value="u">{{ u }}</option>
+                                </select>
+                            </div>
                         </div>
                       </div>
 
@@ -120,7 +119,7 @@
 
                 <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500"></div>
-                   <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-6 border-b border-slate-100 pb-3 flex items-center gap-2">Parameter Stok</h4>
+                   <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide mb-6 border-b border-slate-100 pb-3">Parameter Stok</h4>
                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div class="space-y-2">
                          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Harga Satuan (Rp)</label>
@@ -178,15 +177,17 @@ import {
   ArchiveBoxIcon, PhotoIcon, CameraIcon, ShieldCheckIcon, ExclamationCircleIcon 
 } from '@heroicons/vue/24/outline';
 
+// Definisi Props dan Emits untuk komunikasi dengan Parent Component
 const props = defineProps({ show: Boolean, itemToEdit: Object, categoryOptions: Array });
 const emit = defineEmits(['close', 'save']);
 
-const store = useInventoryStore();
-const localItem = ref({});
-const fileInput = ref(null);
-const localError = ref({ show: false, message: '' });
+const store = useInventoryStore(); // Mengakses store inventory (Pinia/Vuex)
+const localItem = ref({}); // Data item sementara untuk input form
+const fileInput = ref(null); // Referensi untuk input file (DOM)
+const localError = ref({ show: false, message: '' }); // State notifikasi error lokal
 
 // --- LOGIKA UOM & KATEGORI ---
+// Mapping kategori ke satuan yang relevan (misal: Kertas pakai Rim)
 const uomMap = { 
   1: ['Pcs', 'Lusin', 'Pack', 'Box'], // Alat Tulis
   2: ['Rim', 'Lembar', 'Map'],        // Kertas
@@ -194,15 +195,20 @@ const uomMap = {
   4: ['Unit', 'Roll', 'Buah'],        // Perlengkapan
   5: ['Unit', 'Meter']                // Lain-lain
 };
+// Mengambil daftar satuan berdasarkan kategori yang sedang dipilih
 const availableUOMs = computed(() => localItem.value.category_id ? (uomMap[localItem.value.category_id] || ['Pcs']) : []);
 
 // --- LOGIKA KODE BARANG ---
+// Mengambil bagian angka saja dari kode barang (buang prefix 'ATK-')
 const atkCodeSuffix = computed(() => localItem.value.code?.replace(/^ATK-/, '') || '');
+
+// Memaksa input kode hanya angka dan menambahkan prefix 'ATK-' secara otomatis
 const handleCodeInput = (e) => {
   const val = e.target.value.replace(/[^0-9]/g, '');
   localItem.value.code = 'ATK-' + val;
 };
 
+// Cek format kode (minimal 3 digit dan bukan nol)
 const idValidationError = computed(() => {
   const suffix = atkCodeSuffix.value;
   if (suffix.length === 0) return null;
@@ -211,6 +217,7 @@ const idValidationError = computed(() => {
   return null;
 });
 
+// Cek apakah kode barang sudah dipakai oleh item lain di database/store
 const isCodeDuplicate = computed(() => {
   const currentCode = localItem.value.code;
   if (!currentCode || atkCodeSuffix.value.length < 3) return false;
@@ -218,12 +225,15 @@ const isCodeDuplicate = computed(() => {
 });
 
 // --- LOGIKA VALIDASI FORM ---
+// Memastikan semua field wajib diisi
 const isFormComplete = computed(() => {
   return localItem.value.name?.trim() && localItem.value.category_id && localItem.value.uom && localItem.value.url_photo && atkCodeSuffix.value.length >= 3;
 });
 
+// Gabungan validasi: Lengkap + Format Benar + Tidak Duplikat
 const isFormReady = computed(() => isFormComplete.value && !idValidationError.value && !isCodeDuplicate.value);
 
+// Fungsi terakhir sebelum data dikirim ke Parent (Save)
 const handleValidateAndSave = () => {
   if (idValidationError.value) return showError(idValidationError.value);
   if (isCodeDuplicate.value) return showError("Kode barang (SKU) sudah terdaftar!");
@@ -232,13 +242,17 @@ const handleValidateAndSave = () => {
   emit('save', { ...localItem.value });
 };
 
+// Fungsi menampilkan toast error selama 4 detik
 const showError = (msg) => {
   localError.value = { show: true, message: msg };
   setTimeout(() => localError.value.show = false, 4000);
 };
 
 // --- MISC HELPERS ---
+// Memicu klik pada input file tersembunyi
 const triggerFileInput = () => fileInput.value.click();
+
+// Handle file yang diupload, buat URL preview, dan cek ukuran file
 const handleFileUpload = (e) => {
   const file = e.target.files[0];
   if (file) {
@@ -247,27 +261,20 @@ const handleFileUpload = (e) => {
   }
 };
 
+// Watcher untuk mereset data form saat modal dibuka/tutup
 watch(() => props.show, (val) => {
   if (val) {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'; // Kunci scroll layar utama
+    // Jika edit, copy data; jika tambah baru, siapkan object kosong
     localItem.value = props.itemToEdit ? { ...props.itemToEdit } : {
       code: 'ATK-', name: '', category_id: '', uom: '', 
       min_stock: 0, max_stock: 0, price: 0, status: 'Active', url_photo: ''
     };
   } else {
-    document.body.style.overflow = '';
+    document.body.style.overflow = ''; // Aktifkan kembali scroll layar
   }
 });
 
 const onClose = () => emit('close');
-onUnmounted(() => document.body.style.overflow = '');
+onUnmounted(() => document.body.style.overflow = ''); // Pastikan scroll balik normal saat component hancur
 </script>
-
-<style scoped>
-.form-input-bold { @apply block w-full rounded-xl border border-slate-300 bg-white text-slate-800 font-semibold focus:ring-2 focus:ring-blue-100 focus:border-blue-500 py-2.5 transition-all outline-none sm:text-sm; }
-.form-select-bold { @apply block w-full rounded-xl border border-slate-300 bg-white text-slate-800 font-semibold focus:ring-2 focus:ring-blue-100 focus:border-blue-500 py-2.5 transition-all cursor-pointer outline-none sm:text-sm; }
-.custom-scrollbar::-webkit-scrollbar { width: 5px; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-.animate-bounce { animation: bounce 0.5s infinite alternate; }
-@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
-</style>
