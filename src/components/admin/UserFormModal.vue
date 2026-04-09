@@ -167,8 +167,9 @@
                           <p v-if="!localUser.unit_id" class="text-error">Pilih unit kerja</p>
                       </div>
                       <div class="space-y-2">
-                          <label class="label-modern">Nama Jabatan</label>
+                          <label class="label-modern">Nama Jabatan<span class="text-red-500">*</span></label>
                           <input v-model="localUser.position_name" type="text" class="form-input-bold px-4" placeholder="cth: Officer Pengadaan" />
+                          <p v-if="!localUser.position_name?.trim()" class="text-error">Nama jabatan wajib diisi</p>
                       </div>
                    </div>
                 </div>
@@ -321,7 +322,8 @@ const validationSummary = computed(() => {
   if (duplicateDetails.value.username) errors.push("Username Duplikat");
   if (!localUser.value.email?.includes('@')) errors.push("Email Invalid");
   if (duplicateDetails.value.email) errors.push("Email Duplikat");
-  
+  if (!localUser.value.position_name?.trim()) errors.push("Jabatan");
+
   // Validasi NIP
   if (!localUser.value.nip) errors.push("NIP Kosong");
   else if (localUser.value.nip.length !== 18) errors.push(`NIP Kurang (${localUser.value.nip.length}/18)`);
@@ -371,6 +373,7 @@ watch(() => props.show, (val) => {
       localUser.value = { 
         full_name: '', username: '', email: '', phone: '', nip: '',
         unit_id: '', role: 'User', is_active: 1, url_photo: '',
+        position_name: '',
       };
     }
   } else {

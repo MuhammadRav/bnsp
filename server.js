@@ -177,10 +177,10 @@ app.post('/api/units', async (req, res) => {
 
 app.put('/api/units/:id', async (req, res) => {
   try {
-    const { alias, name, address, phone, ref_id, is_active } = req.body;
+    const { alias, name, address, phone, ref_id, parent_id, is_active } = req.body;
     await db.execute(
-      'UPDATE c_master_unit SET alias=?, name=?, address=?, phone=?, ref_id=?, is_active=? WHERE id=?',
-      [alias, name, address, phone, ref_id, is_active, req.params.id]
+      'UPDATE c_master_unit SET alias=?, name=?, address=?, phone=?, ref_id=?, parent_id=?, is_active=? WHERE id=?',
+      [alias, name, address, phone, ref_id, parent_id, is_active, req.params.id]
     );
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }

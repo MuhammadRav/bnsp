@@ -79,16 +79,23 @@
                       </div>
 
                       <div class="space-y-2">
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Parent ID</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">UNIT Induk</label>
                         <div class="relative group">
-                           <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                              <QueueListIcon class="h-5 w-5 text-slate-400" />
-                           </div>
-                           <input v-model.number="localUnit.parent_id" @input="filterParentId" type="text" class="form-input-bold pl-11 outline-none" placeholder="0" />
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                          <QueueListIcon class="h-5 w-5 text-emerald-500" />
                         </div>
+                        <input 
+                          :value="localUnit.parent_id === 3 ? 'UID PUSAT (KPS-001)' : localUnit.parent_id" 
+                          type="text" 
+                          readonly 
+                          class="form-input-bold pl-11 bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed outline-none" 
+                        />
                       </div>
+                      <p class="text-[10px] text-slate-400 mt-1 ml-1 font-medium italic">
+                        * Unit baru otomatis berada di bawah koordinasi Kantor Pusat.
+                      </p>
+                    </div>
                   </div>
-
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                       <div class="space-y-2">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Alias Unit <span class="text-red-500">*</span></label>
@@ -232,10 +239,10 @@ const handleRegionInput = (e) => {
   localUnit.value.alias = val ? `${refPrefix.value} ${val}` : '';
 };
 
-const filterParentId = (e) => {
-  const val = e.target.value.replace(/[^0-9]/g, '');
-  localUnit.value.parent_id = val === '' ? 0 : parseInt(val);
-};
+// const filterParentId = (e) => {
+//   const val = e.target.value.replace(/[^0-9]/g, '');
+//   localUnit.value.parent_id = val === '' ? 0 : parseInt(val);
+// };
 
 const filterPhoneInput = (e) => {
   localUnit.value.phone = e.target.value;
@@ -299,7 +306,7 @@ watch(() => props.show, (val) => {
       const partsAlias = localUnit.value.alias?.split(' ') || [];
       unitRegion.value = partsAlias.slice(1).join(' ');
     } else {
-      localUnit.value = { ref_id: '', parent_id: 0, alias: '', name: '', address: '', phone: '', is_active: 1 };
+      localUnit.value = { ref_id: '', parent_id: 3, alias: '', name: '', address: '', phone: '', is_active: 1 };
       refPrefix.value = 'UID'; refNumber.value = ''; unitRegion.value = '';
     }
   } else {

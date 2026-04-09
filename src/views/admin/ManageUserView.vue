@@ -50,8 +50,9 @@
       </div>
       <div class="hidden sm:flex flex-col items-end justify-center">
         <div class="flex items-center gap-2 text-sm font-bold text-slate-700">
-          <CalendarDaysIcon class="h-4 w-4 text-slate-400" /><span>{{ currentTime }} WIB</span>
+          <CalendarDaysIcon class="h-4 w-4 text-slate-400" /><span>{{ currentDate }}</span>
         </div>
+        <div class="text-xs font-mono text-slate-400 mt-1">{{ currentTime }} WIB</div>
       </div>
     </div>
 
@@ -342,8 +343,26 @@ const handleDetailEdit = () => {
 };
 
 const currentTime = ref('');
+const currentDate = ref('');
+let timer = null;
+
+const updateTime = () => {
+  const now = new Date();
+  // Format Waktu: 20:30:15
+  currentTime.value = now.toLocaleTimeString('id-ID', { hour12: false });
+  // Format Tanggal: Kamis, 9 April 2026
+  currentDate.value = now.toLocaleDateString('id-ID', { 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  });
+};
 onMounted(() => {
   store.fetchAllData(); // Pastikan data terload saat view di-mount
-  setInterval(() => { currentTime.value = new Date().toLocaleTimeString('id-ID'); }, 1000);
+  updateTime(); // Jalankan langsung saat load
+  timer = setInterval(updateTime, 1000); // Update setiap detik});
 });
+import { onUnmounted } from 'vue';
+onUnmounted(() => clearInterval(timer));
 </script>
