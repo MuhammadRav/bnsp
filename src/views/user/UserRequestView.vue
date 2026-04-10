@@ -23,72 +23,78 @@
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" @click="closeDetailModal"></div>
 
         <div class="relative w-full max-w-4xl h-[85vh] bg-slate-50 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-scale-up ring-1 ring-white/20">
-            <div class="px-8 py-6 border-b border-slate-200 bg-white flex justify-between items-start shrink-0 z-10 relative">
-                <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border flex items-center gap-1.5"
-                              :class="{
-                                'bg-amber-100 text-amber-700 border-amber-200': detailModal.data.status === 'Pending',
-                                'bg-blue-100 text-blue-700 border-blue-200': detailModal.data.status === 'Completed',
-                                'bg-red-100 text-red-700 border-red-200': detailModal.data.status === 'Rejected'
-                              }">
-                              <span class="w-2 h-2 rounded-full" :class="{
-                                'bg-amber-500': detailModal.data.status === 'Pending',
-                                'bg-blue-500': detailModal.data.status === 'Completed',
-                                'bg-red-500': detailModal.data.status === 'Rejected'
-                              }"></span>
-                              {{ detailModal.data.status === 'Pending' ? 'Menunggu Proses' : (detailModal.data.status === 'Completed' ? 'Disetujui' : 'Ditolak') }}
-                        </span>
-                        <span class="text-xs text-slate-400 font-mono font-bold tracking-wider">#{{ detailModal.data.code }}</span>
-                    </div>
-                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">Detail Transaksi</h2>
-                    <p class="text-sm text-slate-500 mt-1 flex items-center gap-2">
-                        <UserIcon class="h-4 w-4 text-blue-600" /> 
-                        <span class="font-bold text-slate-700">{{ currentUser?.full_name }}</span> 
-                    </p>
-                </div>
-                <button @click="closeDetailModal" class="p-2 rounded-full bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors">
-                    <XMarkIcon class="h-6 w-6" />
-                </button>
+          <div class="px-8 py-6 border-b border-slate-200 bg-white flex justify-between items-start shrink-0 z-10 relative">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border flex items-center gap-1.5"
+                      :class="detailModal.data.status === 'Pending' ? 'bg-amber-100 text-amber-700 border-amber-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200'">
+                  <span class="w-2 h-2 rounded-full" :class="detailModal.data.status === 'Pending' ? 'bg-amber-500' : 'bg-emerald-500'"></span>
+                  {{ detailModal.data.status === 'Pending' ? 'Menunggu Proses' : 'Transaksi Selesai' }}
+                </span>
+                <span class="text-xs text-slate-400 font-mono font-bold tracking-wider">#{{ detailModal.data.code }}</span>
+              </div>
+              <h2 class="text-2xl font-black text-slate-800 tracking-tight">Detail Transaksi</h2>
             </div>
+            <button @click="closeDetailModal" class="p-2 rounded-full bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors">
+              <XMarkIcon class="h-6 w-6" />
+            </button>
+          </div>
 
-            <div class="px-8 py-5 bg-white border-b border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
-                <div class="space-y-1">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Waktu Pengajuan</p>
-                    <p class="text-sm font-bold text-slate-700 font-mono flex items-center gap-2 bg-slate-50 w-fit px-2 py-1 rounded border border-slate-100">
-                        <PaperAirplaneIcon class="h-4 w-4 text-blue-500" />
-                        {{ formatDateTimeFull(detailModal.data.created_at) }} WIB
-                    </p>
-                </div>
-                <div class="col-span-1 md:col-span-2">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Catatan Pengajuan</p>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-sm text-slate-600 italic flex gap-2">
-                        <ChatBubbleBottomCenterTextIcon class="h-5 w-5 text-slate-400 shrink-0" />
-                        "{{ detailModal.data.description || 'Tidak ada catatan.' }}"
-                    </div>
-                </div>
+          <div class="px-8 py-5 bg-white border-b border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
+            <div class="space-y-1">
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Waktu Pengajuan</p>
+              <p class="text-sm font-bold text-slate-700 font-mono flex items-center gap-2 bg-slate-50 w-fit px-2 py-1 rounded border border-slate-100">
+                <PaperAirplaneIcon class="h-4 w-4 text-blue-500" />
+                {{ formatDateTimeFull(detailModal.data.created_at) }} WIB
+              </p>
             </div>
+            <div class="col-span-1 md:col-span-2">
+              <p class="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Catatan Pengajuan Anda</p>
+              <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-sm text-slate-600 italic flex gap-2">
+                <ChatBubbleBottomCenterTextIcon class="h-5 w-5 text-slate-400 shrink-0" />
+                "{{ detailModal.data.description || 'Tidak ada catatan.' }}"
+              </div>
+            </div>
+          </div>
 
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
-                <div v-for="(item, idx) in detailModal.data.details" :key="idx" 
-                     class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
-                    <div class="h-16 w-16 bg-slate-50 rounded-xl flex items-center justify-center p-2 border border-slate-100 shrink-0">
-                         <img v-if="getDetailItem(item.item_id)?.url_photo" :src="getDetailItem(item.item_id).url_photo" class="h-full w-full object-contain" />
-                         <CubeIcon v-else class="h-8 w-8 text-slate-300" />
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="text-sm font-bold text-slate-800">{{ getDetailItem(item.item_id)?.name || 'Unknown Item' }}</h4>
-                        <p class="text-xs text-slate-400 font-mono">{{ getDetailItem(item.item_id)?.code }}</p>
-                        <p v-if="item.qty_approved < item.qty && detailModal.data.status === 'Completed'" class="text-[10px] text-orange-600 font-bold mt-1 bg-orange-50 w-fit px-2 py-0.5 rounded">
-                           Disetujui: {{ item.qty_approved }} / {{ item.qty }}
-                        </p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">Jumlah Request</p>
-                        <p class="text-lg font-black text-slate-700">{{ item.qty }} <span class="text-xs font-medium text-slate-400">Pcs</span></p>
-                    </div>
+          <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
+            <div v-for="(item, idx) in detailModal.data.details" :key="idx" 
+                class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center gap-4 group hover:border-blue-200 transition-all">
+              <div class="h-16 w-16 bg-slate-50 rounded-xl flex items-center justify-center p-2 border border-slate-100 shrink-0">
+                <img v-if="getDetailItem(item.item_id)?.url_photo" :src="getDetailItem(item.item_id).url_photo" class="h-full w-full object-contain" />
+                <CubeIcon v-else class="h-8 w-8 text-slate-300" />
+              </div>
+              <div class="flex-1">
+                <h4 class="text-sm font-bold text-slate-800">{{ getDetailItem(item.item_id)?.name || 'Unknown Item' }}</h4>
+                <p class="text-xs text-slate-400 font-mono mb-2">{{ getDetailItem(item.item_id)?.code }}</p>
+                
+                <div class="mt-1 mb-2">
+                  <p class="text-[10px] text-blue-600 bg-blue-50/50 w-fit px-2 py-0.5 rounded border border-blue-100/50 flex items-center gap-1">
+                    <ChatBubbleLeftEllipsisIcon class="h-3 w-3" />
+                    <span class="font-medium italic">"{{ item.notes || 'Tidak ada catatan item.' }}"</span>
+                  </p>
                 </div>
+
+                <div v-if="detailModal.data.status !== 'Pending'" class="mt-3 space-y-2 border-t border-slate-50 pt-2">
+                  <div v-if="item.qty_approved > 0" class="flex items-center gap-2">
+                    <span class="text-[9px] bg-emerald-50 text-emerald-700 font-black px-2 py-0.5 rounded border border-emerald-100 uppercase">Diterima: {{ item.qty_approved }} Pcs</span>
+                    <span v-if="item.qty_approved < item.qty" class="text-[9px] bg-red-50 text-red-600 font-black px-2 py-0.5 rounded border border-red-100 uppercase">Ditolak: {{ item.qty - item.qty_approved }} Pcs</span>
+                  </div>
+                  <div v-else class="text-[9px] bg-red-50 text-red-600 font-black px-2 py-0.5 rounded border border-red-100 w-fit flex items-center gap-1 uppercase">
+                    <XCircleIcon class="h-3 w-3" /> Item Ditolak Total
+                  </div>
+
+                  <p v-if="item.reject_reason" class="text-[10px] text-red-500 italic flex items-start gap-1 bg-red-50/30 p-2 rounded-lg border border-dashed border-red-200">
+                    <span class="font-bold not-italic text-red-700">Feedback Admin:</span> {{ item.reject_reason }}
+                  </p>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Request</p>
+                <p class="text-xl font-black text-slate-700">{{ item.qty }} <span class="text-[10px] font-medium text-slate-400">Pcs</span></p>
+              </div>
             </div>
+          </div>
         </div>
       </div>
     </Transition>
@@ -202,13 +208,11 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase border"
-                          :class="{
-                            'bg-amber-50 text-amber-700 border-amber-200': trx.status === 'Pending',
-                            'bg-blue-50 text-blue-700 border-blue-200': trx.status === 'Completed',
-                            'bg-red-50 text-red-700 border-red-200': trx.status === 'Rejected'
-                          }">
-                        {{ trx.status === 'Pending' ? 'Menunggu' : (trx.status === 'Completed' ? 'Selesai' : 'Ditolak') }}
+                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase border tracking-wider"
+                          :class="trx.status === 'Pending' 
+                                  ? 'bg-amber-50 text-amber-700 border-amber-200' 
+                                  : 'bg-emerald-50 text-emerald-700 border-emerald-200'">
+                        {{ trx.status === 'Pending' ? 'Menunggu' : 'Selesai' }}
                     </span>
                 </div>
             </div>
@@ -247,26 +251,34 @@
                     </div>
                     
                     <div class="flex-1">
-                        <p class="text-xs font-bold text-slate-800 line-clamp-1">{{ cartItem.name }}</p>
-                        
-                        <div class="flex items-center gap-2 mt-2">
-                             <button @click="updateCartItem(cartItem, -1)" class="h-7 w-7 border rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-200 font-bold">-</button>
-                             
-                             <input 
-                                type="text" 
-                                v-model.number="cartItem.qty"
-                                @input="validateCartInput(cartItem)"
-                                @keypress="isNumber($event)"
-                                @focus="$event.target.select()"
-                                class="w-16 text-center text-sm font-bold border rounded-lg py-1 px-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
-                             />
-                             
-                             <button @click="updateCartItem(cartItem, 1)" class="h-7 w-7 border rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-200 font-bold" :disabled="getRemainingQuota(cartItem.id) <= cartItem.qty">+</button>
-                        </div>
+                      <p class="text-xs font-bold text-slate-800 line-clamp-1">{{ cartItem.name }}</p>
+                      
+                      <div class="flex items-center justify-between mt-2">
+                          <div class="flex items-center gap-2">
+                                <button @click="updateCartItem(cartItem, -1)" class="h-7 w-7 border rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-200 font-bold">-</button>
+                                <input 
+                                  type="text" 
+                                  v-model.number="cartItem.qty"
+                                  @input="validateCartInput(cartItem)"
+                                  class="w-12 text-center text-sm font-bold border rounded-lg py-1 focus:ring-2 focus:ring-blue-500 outline-none"
+                                />
+                                <button @click="updateCartItem(cartItem, 1)" class="h-7 w-7 border rounded-lg bg-slate-50 text-slate-600 hover:bg-slate-200 font-bold" :disabled="getRemainingQuota(cartItem.id) <= cartItem.qty">+</button>
+                          </div>
+                          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ cartItem.uom }}</span>
+                      </div>
 
-                        <p v-if="getRemainingQuota(cartItem.id) < cartItem.qty" class="text-[9px] text-red-500 font-bold mt-1 animate-pulse">Melebihi sisa stok unit!</p>
-                        <p v-else class="text-[9px] mt-1 text-slate-400">Sisa Kuota: <span class="font-bold text-blue-600">{{ getRemainingQuota(cartItem.id) - (cartItem.qty - (cart.find(c => c.id === cartItem.id)?.qty || 0)) }}</span> (Realtime)</p>
-                    </div>
+                      <div class="mt-2">
+                          <input 
+                            v-model="cartItem.notes" 
+                            type="text" 
+                            placeholder="Catatan tambahan (opsional)..." 
+                            class="w-full text-[10px] border-b border-slate-100 focus:border-blue-400 outline-none py-1 bg-transparent placeholder:italic text-slate-500"
+                          />
+                      </div>
+
+                      <p v-if="getRemainingQuota(cartItem.id) < cartItem.qty" class="text-[9px] text-red-500 font-bold mt-1 animate-pulse">Melebihi sisa stok unit!</p>
+                      <p v-else class="text-[9px] mt-1 text-slate-400">Sisa Kuota: <span class="font-bold text-blue-600">{{ getRemainingQuota(cartItem.id) - (cartItem.qty - (cart.find(c => c.id === cartItem.id)?.qty || 0)) }}</span></p>
+                  </div>
                 </div>
              </div>
 
@@ -283,7 +295,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useInventoryStore } from '../../stores/inventoryStore'; 
 import { 
   PlusCircleIcon, CheckCircleIcon, CubeIcon, ShoppingCartIcon, 
@@ -452,6 +464,7 @@ const handleSubmit = async () => {
         
         if (res) {
             cart.value = [];
+            localStorage.removeItem('user_cart'); // Hapus data di storage setelah sukses kirim
             requestDescription.value = '';
             isCartOpen.value = false;
             showToast('success', 'Berhasil', 'Pengajuan terkirim ke Admin.');
@@ -473,9 +486,20 @@ const showToast = (type, title, message) => {
     setTimeout(() => toast.value.show = false, 3000);
 };
 
+watch(cart, (newCart) => {
+    localStorage.setItem('user_cart', JSON.stringify(newCart));
+}, { deep: true });
+
 onMounted(() => {
-    store.fetchAllData();
-    pollingInterval = setInterval(() => { store.fetchAllData(); }, 5000);
+    store.fetchAllData();
+    
+    // 2. Ambil data keranjang dari LocalStorage saat refresh
+    const savedCart = localStorage.getItem('user_cart');
+    if (savedCart) {
+        cart.value = JSON.parse(savedCart);
+    }
+
+    pollingInterval = setInterval(() => { store.fetchAllData(); }, 5000);
 });
 
 onUnmounted(() => { if (pollingInterval) clearInterval(pollingInterval); });
