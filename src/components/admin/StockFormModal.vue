@@ -279,9 +279,26 @@ const stockError = computed(() => {
 
 // Status kesiapan tombol simpan
 const isFormReady = computed(() => {
-  const basic = localStock.value.item_id && localStock.value.unit_id && !maxStockError.value && !stockError.value && !isCombinationDuplicate.value;
-  if (isEditing.value) return basic && (transactionQty.value > 0 || localStock.value.price !== props.stockToEdit.price);
-  return basic && localStock.value.stock >= 0;
+  // Pengecekan Validitas Dasar (Wajib pilih barang & unit, serta tidak ada error stok)
+  const isBasicValid = localStock.value.item_id && 
+                       localStock.value.unit_id && 
+                       !maxStockError.value && 
+                       !stockError.value && 
+                       !isCombinationDuplicate.value;
+
+  if (isEditing.value) {
+    // Tombol aktif jika: Dasar Valid DAN (Ada Mutasi Stok ATAU Harga Berubah ATAU Stok Min Berubah ATAU Status Berubah)
+    const hasAnyChange = 
+      (transactionQty.value > 0) || 
+      (localStock.value.price !== props.stockToEdit.price) ||
+      (localStock.value.stock_min !== props.stockToEdit.stock_min) ||
+      (localStock.value.status !== props.stockToEdit.status);
+
+    return isBasicValid && hasAnyChange;
+  }
+
+  // Untuk mode Tambah Baru (bukan edit)
+  return isBasicValid && localStock.value.stock >= 0;
 });
 
 // --- FUNGSI VALIDASI PROAKTIF SAAT SIMPAN ---

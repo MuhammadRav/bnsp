@@ -433,19 +433,27 @@ const handleStockSave = async (formData) => {
       });
 
       if (qtyChange > 0) {
-        await axios.post('http://localhost:3000/api/log', {
-          type: type, item_id: formData.item_id, qty: qtyChange, actor: actor, note: formData.txNote || 'Koreksi Manual'
+        // Sudah menggunakan /api/logs (plural) sesuai server.js
+        await axios.post('http://localhost:3000/api/logs', {
+          type: type, 
+          item_id: formData.item_id, 
+          qty: qtyChange, 
+          actor: actor, 
+          note: formData.txNote || 'Koreksi Manual'
         });
       }
-      triggerToast('Mutasi stok berhasil disimpan.', 'success');
-    } else {
-      // INSERT NEW STOCK
-      await axios.post('http://localhost:3000/api/stocks', formData);
-      await axios.post('http://localhost:3000/api/log', {
-        type: 'IN', item_id: formData.item_id, qty: formData.stock, actor: actor, note: 'Initial Stock'
-      });
-      triggerToast('Data stok unit berhasil dibuat.', 'success');
-    }
+      // ...
+      } else {
+        await axios.post('http://localhost:3000/api/stocks', formData);
+        // Sudah menggunakan /api/logs (plural) sesuai server.js
+        await axios.post('http://localhost:3000/api/logs', {
+          type: 'IN', 
+          item_id: formData.item_id, 
+          qty: formData.stock, 
+          actor: actor, 
+          note: 'Initial Stock'
+        });
+      }
     
     await store.fetchAllData();
     closeModal();

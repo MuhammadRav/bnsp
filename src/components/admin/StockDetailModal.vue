@@ -113,7 +113,7 @@
                 <div class="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
                   <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                     <h4 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                      <ClockIcon class="h-4 w-4 text-blue-500" /> Log Pergerakan (FIFO)
+                      <ArrowsRightLeftIcon class="h-4 w-4 text-indigo-500" /> Riwayat Mutasi Barang
                     </h4>
                     <div class="flex items-center gap-3">
                       <span class="text-[10px] font-bold text-slate-400 uppercase">{{ currentPage }} / {{ totalPages }}</span>
@@ -127,24 +127,26 @@
                     <table class="min-w-full divide-y divide-slate-100">
                       <thead>
                         <tr class="text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] bg-slate-50/30">
-                          <th class="px-6 py-3 text-left">Tgl Masuk</th>
-                          <th class="px-6 py-3 text-right">Harga</th>
-                          <th class="px-6 py-3 text-center">Sisa Stok</th>
-                          <th class="px-6 py-3 text-right">Subtotal</th>
+                          <th class="px-6 py-3 text-left">Waktu</th>
+                          <th class="px-6 py-3 text-center">Tipe</th>
+                          <th class="px-6 py-3 text-right">Qty</th>
+                          <th class="px-6 py-3 text-left">Oleh</th>
                         </tr>
                       </thead>
                       <tbody class="divide-y divide-slate-50">
-                        <tr v-for="batch in paginatedBatches" :key="batch.id" class="hover:bg-blue-50/30 transition-colors group">
-                          <td class="px-6 py-4 text-xs font-bold text-slate-600 font-mono">{{ formatDate(batch.date) }}</td>
-                          <td class="px-6 py-4 text-xs text-right font-black text-slate-800">Rp{{ batch.price.toLocaleString('id-ID') }}</td>
-                          <td class="px-6 py-4 text-center">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-700">
-                              {{ batch.stock }}
+                        <tr v-for="log in paginatedHistory" :key="log.id" class="hover:bg-blue-50/30 transition-colors group">
+                          <td class="px-6 py-4 text-[10px] font-bold text-slate-500 font-mono">{{ formatDate(log.date) }}</td>
+                          <td class="px-6 py-3 text-center">
+                            <span :class="log.type === 'IN' ? 'text-green-600 bg-green-50 border-green-100' : 'text-orange-600 bg-orange-50 border-orange-100'" class="px-2 py-0.5 rounded text-[9px] font-black border uppercase">
+                              {{ log.type }}
                             </span>
                           </td>
-                          <td class="px-6 py-4 text-xs text-right font-bold text-slate-400 font-mono">Rp{{ (batch.price * batch.stock).toLocaleString('id-ID') }}</td>
+                          <td class="px-6 py-3 text-right font-black text-sm" :class="log.type === 'IN' ? 'text-green-600' : 'text-orange-600'">
+                            {{ log.type === 'IN' ? '+' : '-' }}{{ log.qty }}
+                          </td>
+                          <td class="px-6 py-3 text-[10px] font-bold text-slate-600">{{ log.actor_name }}</td>
                         </tr>
-                        <tr v-if="sortedBatches.length === 0">
+                        <tr v-if="itemHistory.length === 0">
                           <td colspan="4" class="px-6 py-24 text-center text-slate-400 italic text-xs">Belum ada riwayat pergerakan stok.</td>
                         </tr>
                       </tbody>
@@ -158,7 +160,7 @@
           <div class="bg-slate-50 px-8 py-4 border-t border-slate-100 flex justify-between items-center shrink-0">
              <div class="flex items-center gap-2">
                <div class="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
-               <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Data Referensi: EATK_ITEM_UNIT</span>
+               <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Data Referensi: EATK_STOCK_LOG</span>
              </div>
              <p class="text-[10px] text-slate-400 font-medium italic">Klik di luar modal untuk menutup</p>
           </div>
@@ -170,47 +172,55 @@
 
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue';
+import { useInventoryStore } from '../../stores/inventoryStore';
 import { 
   XMarkIcon, MapPinIcon, ArchiveBoxIcon, PencilSquareIcon, PhotoIcon, 
-  TagIcon, ClockIcon, ChevronLeftIcon, ChevronRightIcon,
-  ExclamationTriangleIcon
+  ClockIcon, ChevronLeftIcon, ChevronRightIcon,
+  ExclamationTriangleIcon, ArrowsRightLeftIcon
 } from '@heroicons/vue/24/outline';
 
 const props = defineProps(['show', 'item']);
 defineEmits(['close', 'edit']);
 
-// --- FIFO BATCH LOGIC ---
-const currentPage = ref(1);
-const itemsPerPage = 4;
+const store = useInventoryStore();
 
-const sortedBatches = computed(() => {
-  // Mengambil data batch dari database (eatk_item_unit batches)
-  const realBatches = props.item?.batches ? [...props.item.batches] : [];
-  return realBatches.sort((a, b) => new Date(b.date) - new Date(a.date));
+// Live data dari store agar reaktif (mencari stok terbaru di unit ini)
+const liveStockData = computed(() => {
+  return store.stocks.find(s => s.id === props.item?.id) || props.item;
 });
 
-const totalPages = computed(() => Math.ceil(sortedBatches.value.length / itemsPerPage) || 1);
+// --- LOGIKA RIWAYAT MUTASI ---
+const currentPage = ref(1);
+const itemsPerPage = 5;
 
-const paginatedBatches = computed(() => {
+const itemHistory = computed(() => {
+  if (!props.item?.item_id) return [];
+  // Filter history global berdasarkan item_id dari barang yang dipilih
+  return store.history.filter(log => log.item_id === props.item.item_id)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+});
+
+const totalPages = computed(() => Math.ceil(itemHistory.value.length / itemsPerPage) || 1);
+
+const paginatedHistory = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
-  return sortedBatches.value.slice(start, start + itemsPerPage);
+  return itemHistory.value.slice(start, start + itemsPerPage);
 });
 
 // --- STATISTIK DINAMIS ---
 const totalStock = computed(() => {
-  // Jika ada data batches, hitung totalnya
-  if (sortedBatches.value.length > 0) {
-    return sortedBatches.value.reduce((sum, batch) => sum + (parseInt(batch.stock) || 0), 0);
-  }
-  // Jika batches kosong, ambil langsung dari properti stock utama item
-  return props.item?.stock || 0;
+  return liveStockData.value?.stock || 0;
 });
 
-watch(() => props.item, () => { currentPage.value = 1; });
+watch(() => props.item, () => { 
+  currentPage.value = 1; 
+});
 
 const formatDate = (str) => {
   if (!str) return '-';
-  return new Date(str).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+  const d = new Date(str);
+  return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) + ' ' + 
+         d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 };
 
 // Scroll Lock
@@ -226,7 +236,6 @@ onUnmounted(() => { document.body.style.overflow = ''; });
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-/* Transitions */
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 

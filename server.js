@@ -31,6 +31,16 @@ export async function logStock(type, itemId, qty, actor, note, conn) {
   await connection.execute(sql, [type, itemId, qty, actor, note]);
 }
 
+app.post('/api/logs', async (req, res) => {
+  try {
+    const { type, item_id, qty, actor, note } = req.body;
+    await logStock(type, item_id, qty, actor, note);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
 // ===============================
 // 3. AUTHENTICATION (LOGIN HYBRID)
 // ===============================
@@ -291,28 +301,33 @@ app.post('/api/process-transaction', async (req, res) => {
   const conn = await db.getConnection();
   try {
     await conn.beginTransaction();
+    
+    // 1. Update status header transaksi
     await conn.execute('UPDATE eatk_transaction SET status="Completed", updated_at=NOW() WHERE id=?', [trx_id]);
 
     for (const item of items) {
+      // Sesuaikan status detail
       const status = item.action === 'approve' ? 'Approved' : 'Rejected';
       const approvedQty = item.action === 'approve' ? item.approved_qty : 0;
-      await conn.execute('UPDATE eatk_transaction_detail SET status=?, qty_approved=?, reject_reason=? WHERE id=?', [status, approvedQty, item.reason || null, item.id]);
+      
+      // PASTIKAN kolom reject_reason diupdate di sini agar masuk ke database
+      await conn.execute(
+        'UPDATE eatk_transaction_detail SET status=?, qty_approved=?, reject_reason=? WHERE id=?', 
+        [status, approvedQty, item.reason || null, item.id] // item.reason dari frontend masuk ke reject_reason
+      );
 
       if (item.action === 'approve' && approvedQty > 0) {
-        // Cek stok di unit tujuan
         const [exist] = await conn.execute('SELECT id FROM eatk_item_unit WHERE item_id=? AND unit_id=?', [item.item_id, item.unit_id]);
         
         if (exist.length > 0) {
           await conn.execute('UPDATE eatk_item_unit SET stock=stock+?, updated_at=NOW() WHERE id=?', [approvedQty, exist[0].id]);
         } else {
-          // Buat record stok baru jika belum ada
           await conn.execute(
             `INSERT INTO eatk_item_unit (item_id, unit_id, stock, stock_min, price, status, created_at)
             SELECT id, ?, ?, min_stock, price, 'Active', NOW() FROM eatk_item WHERE id=?`,
             [item.unit_id, approvedQty, item.item_id]
           );
         }
-        // Log Mutasi
         await logStock('IN', item.item_id, approvedQty, actor_name || 'Admin', `Approved TRX #${trx_id}`, conn);
       }
     }
